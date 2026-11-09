@@ -28,10 +28,13 @@ cd context-mesh-demo
 make up                                    # docker: redis + estate + 5 nodes + graph (~60 s to GO). Or: make local
 python3 -m venv .venv && source .venv/bin/activate   # Homebrew Python refuses a global pip install
 pip install -e .                           # the `mesh` CLI on the host
-export BUS_URL=redis://localhost:6379/0    # docker only; local mode uses the file bus by default
+export BUS_URL=redis://localhost:6379/0    # optional: without it the CLI finds the docker redis by itself
 make reset                                 # clean chaos/freeze/deploys, empty the telemetry windows AND restart the nodes
 sleep 30 && mesh preflight                 # six checks, ends in GO or NO-GO
 ```
+
+Or, once the venv exists, all of it in one go: `make stage` (starts Docker Desktop if needed, brings
+the stack up, resets, waits 30 s, runs preflight).
 
 `mesh preflight` must print:
 
@@ -153,15 +156,15 @@ mesh chaos failover db-prod-17
 Within ~6 s pane B shows `logs.keyword failover`, `metrics.cpu_high`, `metrics.replica_lag`, then:
 
 ```
-00:32:09 SUPPRESSED cpu 92% on db-prod-17
-         reason   replica catch-up after failover (2s ago): lag 84 s, rising
+00:55:25 SUPPRESSED cpu 94% on db-prod-17
+         reason   replica catch-up after failover (4s ago): lag 80 s, falling
          recheck  in 120 s · rule: replica catch-up in progress on the same host after a failover in the last 15 min
-         sources  metrics-node 0s ago · logs-node 2s ago · topology-node now · policy-node now
+         sources  metrics-node 0s ago · logs-node 4s ago · topology-node now · policy-node now
 ```
 Say: *"CPU 94 percent. In my old inbox that is a page. The graph asked the policy node, the policy
 node asked for the host's facts: expected, re-check in two minutes, sleep. The rule is a sentence
-in a YAML file, not a regex."* (The trend reads `rising` if the engine decided in the first ~3 s after
-the failover, when the lag has just jumped from 0, and `falling` after that; both are true.)
+in a YAML file, not a regex."* (If the lag has only just
+appeared, the engine looks again for up to 4 s so the trend it reports is the drain, not the jump.)
 
 The lag drains in ~45 s and the CPU clears by itself; the director waits for
 `context.metrics.cpu_high.cleared` (pane B shows it) and then prompts. Meanwhile: the suppression
@@ -186,7 +189,9 @@ looked for and did not find."*
 
 Manual mode only: `mesh chaos cpu` checks the graph's event log first; if the previous `cpu_high`
 has not cleared yet it clears the host chaos and waits for the falling edge, so the second alert
-can never be swallowed. You will see it wait; that is correct.
+can never be swallowed. You will see it wait; that is correct. A second crossing on the same host within
+5 minutes of a PAGE does not page again: pane B shows `RE-CHECK … already paged 10s ago for this host;
+not paging twice`.
 
 ## Beat 3 · SLOs and a posture audit on the same graph (3:45 – 5:00)
 
@@ -203,7 +208,8 @@ SLO status · multi-window burn rate · windows 2m / 10m · fast-burn line 14.4,
   payments     0.999    6.53%    5.59%     65.3     55.9  BURNING     2350ms BREACH   -
 ```
 (Measured 3 min 30 s after the deploy on an estate reset ~1 min before it. On an estate that has run >10 min the
-10 m column is lower, about 1.8% / burn ~18 for payments at 3 min: still BURNING, but give it at least 2.5 min.)
+10 m column is lower, about 1.8% / burn ~18 for payments at 3 min: still BURNING. The director will not run
+this audit before 150 s after the deploy, so it cannot show FAST from being early.)
 Say: *"Payments is burning its 0.1 percent budget at sixty times the rate that would spend it evenly
 over the month; orders and web are over the slow-burn line. The burn-rate maths is the policy node's, the
 ratios are the metrics node's, the burning edge is the traces node's. The graph only did the join.
@@ -264,9 +270,10 @@ it only sees the read-only tools.
 | laptop dies | nothing | `asciinema play demo.cast` recorded with `mesh rehearse` |
 | conference wifi | nothing needs the network; images are pre-pulled; `--llm` is never on the critical path |
 
-Record the fallback the evening before: `asciinema rec demo.cast -c "mesh rehearse"`.
-`mesh rehearse` is `mesh demo --auto --extended`: the whole flow unattended in about 2 min of
-machine time (it waits for the events, plus until the 2 m burn window is full before the SLO audit).
+Record the fallback the evening before: `asciinema rec --overwrite -i 2 --window-size 160x45 -c "mesh rehearse" demo.cast`;
+play it with `asciinema play -s 2 demo.cast`.
+`mesh rehearse` is `mesh demo --auto --extended`: the whole flow unattended in about 2.5 min of
+machine time (it waits for the events, plus until 150 s after the deploy before the SLO audit).
 
 ## Between rehearsals
 

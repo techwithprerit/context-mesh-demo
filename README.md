@@ -120,7 +120,7 @@ mesh demo --approved-by "$USER"
 ```
 
 The director runs the real commands and waits for the right events on the bus between steps, so you
-can't type into a half-ready estate. To watch the whole thing unattended (~2 min), run `mesh rehearse`.
+can't type into a half-ready estate. To watch the whole thing unattended (~2.5 min), run `mesh rehearse`.
 
 | Beat | Commands it runs | What to look for |
 |---|---|---|
@@ -191,7 +191,7 @@ curl -s localhost:8100/api/explain/orders | jq
 | `mesh status` | every node, its port and its tools (write tools flagged) |
 | `mesh preflight` | six go/no-go checks: nodes, estate, graph, bus round-trip, baseline, clean state. Exits non-zero on NO-GO |
 | `mesh demo [--approved-by NAME] [--auto] [--extended]` | the guided run of show, one Enter per beat |
-| `mesh rehearse` | `demo --auto --extended`: the whole flow unattended, ~2 min |
+| `mesh rehearse` | `demo --auto --extended`: the whole flow unattended, ~2.5 min |
 | `mesh explain <service>` | cause, action, hot edges, evidence timeline, one request as metric + trace + logs, sources with ages |
 | `mesh watch [--all]` | tail the bus: threshold events in, SUPPRESSED / PAGE decisions out |
 | `mesh alerts` | the decisions the alert engine has taken so far |

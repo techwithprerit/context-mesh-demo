@@ -148,3 +148,35 @@ mesh demo --approved-by prerit
 Evening before: `make reset && sleep 30 && mesh preflight && asciinema rec --overwrite -i 2 -c "mesh rehearse" demo.cast`
 from the stage terminal, then `asciinema play -s 2 demo.cast` to check it. Today's recording is
 `demo.cast` (114 events, all three beats); a text copy is in `fallback/` (`run3.log`, `paneB-run3.log`).
+
+## Round 2 · remaining risks fixed, re-tested end to end
+
+| file | what | why | proven by |
+|---|---|---|---|
+| `mesh/graph.py` | the same host does not page twice within 5 min (`PAGE_DEDUP_S`); a second crossing publishes `RE-CHECK … already paged Ns ago for this host; not paging twice` | Part 3.4 wanted exactly one PAGE | T4: one `PAGE`, then `RE-CHECK … already paged 10s ago … (cpu now 94%)` |
+| `mesh/graph.py` | the alert engine looks again (2 × 2 s) when replica lag has only just appeared | SUPPRESSED said `rising` or `falling` depending on timing | runs 4 and 5: `lag 84 s, falling`, `lag 80 s, falling`; SUPPRESSED still 4–6 s after failover |
+| `mesh/graph.py` | the three-signal join prefers a trace with WARN/ERROR lines, not any line | the quiet opening `explain` sometimes showed an `INFO order created` line | run 5 opening block: trace only, no log lines |
+| `mesh/graph.py` | fail-open pages carry `ts` and `failed_open`, so they never block a real decision | needed by the 5-minute rule | T1 then T2 both paged |
+| `mesh/cli.py` | director waits until 150 s (was 120 s) after the deploy before `audit slo` | payments could read `FAST` on an estate that has run >10 min | runs 4/5 `BURNING`; live, a no-op at ~3 min |
+| `mesh/cli.py` | without `BUS_URL`, and not in local mode, the CLI uses the docker redis if it answers | a fresh pane without the export was silently on the file bus | runs 4/5 and every test ran with `BUS_URL` **unset** |
+| `Makefile` | `make stage`: start Docker Desktop if needed, `compose up`, reset, 30 s, preflight | T-10 in one command | `make stage` → GO in 38 s |
+| `mesh/nodes/traces_node.py` | the 8 s warm-up is in the watcher, not before the server | each restart logged `red poll failed: traces-node` once and traces was down for 8 s | 0 `red poll failed` after a reset |
+
+Re-test (all with `BUS_URL` unset):
+- **`make stage`:** GO in 38 s.
+- **Run 4 and run 5:** every Beat 1–3 item PASS.
+  - Run 5 is `demo.cast`, recorded at 160×45 (text in `fallback/run5.log`, `fallback/paneB-run5.log`).
+  - Four nodes spoke 8 s after the deploy; SUPPRESSED 6 s after failover; cpu cleared at 44–46 s; PAGE 4 s after `chaos cpu`; 154 s machine time.
+- **Part 3, all six PASS:**
+  - T1: fail-open with `logs-node did not answer search: ConnectError`.
+  - T2: redis reconnect, then PAGE.
+  - T3: graph restart, then GO.
+  - T4: one PAGE plus a dedup RE-CHECK.
+  - T5: three refusals, zero deploys.
+  - T6: status 6/6 throughout; `estate writing` FAIL while down, pass after; 0 alerts in the gap.
+- **Logs:** no tracebacks, no warnings.
+
+Still open (deliberately not changed):
+- `gauge`/`series` take raw metric names.
+- `graph.py` and `cli.py` are long for on-stage reading.
+- Manual mode can still show `FAST` if you run `mesh audit slo` yourself within ~2.5 min of the deploy on an estate that has run >10 min.

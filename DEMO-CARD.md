@@ -2,7 +2,7 @@
 
 ```
 BACKSTAGE      make up · pip install -e . · export BUS_URL=redis://localhost:6379/0
-               make reset · (30 s) · mesh preflight  →  must say GO
+               make reset · (30 s) · mesh preflight  →  must say GO    (or all of it: make stage)
 PANE B         mesh watch --all              (right pane, leave it)
 PANE A         mesh demo --approved-by <you> (left pane; Enter per step)
 
@@ -30,5 +30,5 @@ SPARES         mesh ask "is orders safe to cut over right now?"   (GO with notes
 IF BROKEN      preflight FAIL → make reset, 30 s, preflight again
                pane B silent → wrong BUS_URL
                no PAGE → chaos cpu waits for the cleared edge; let it
-               dead laptop → asciinema play demo.cast
+               dead laptop → asciinema play -s 2 demo.cast
 ```

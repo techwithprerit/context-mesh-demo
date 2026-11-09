@@ -1,0 +1,113 @@
+
+▶ BEAT 1 · correlation across layers, live
+orders  owner orders · wave 4
+
+cause   no explaining context in the last 15 min; here is what changed  (confidence low)
+action  investigate from the evidence below
+
+evidence (oldest first)
+    (nothing in the last 15 min)
+
+one request, three signals
+  metric   error_rate 0.0% over 679 req / 5m   [metrics-node]
+  trace    84042150ccea4a88 97 ms   [traces-node]
+           web:GET /checkout 97ms → orders:POST /orders 87ms → payments:POST /charge 66ms → payments:SELECT balance 8ms
+
+sources  metrics-node 0s ago · traces-node 0s ago
+refused: record_deploy is a write tool: pass approved_by=<human>
+deploy recorded: payments v2.3.1 (approved by prerit)
+chaos: {"payments": {"p99_ms": 1900, "error_rate": 0.06}}
+   point at pane B: deploy → slow_edge → latency → error_burst, from four nodes T+0:00.... four nodes have spoken (8 s)
+orders  owner orders · wave 4
+
+cause   deploy v2.3.1 of payments 8s ago; symptoms started 3 s after it  (confidence high)
+action  roll back payments to the previous version (write: needs a human approver)
+
+hot edges
+  web -> orders                  6.99 req/s  err   1.2%  p99    2248 ms  slow p99 2248 ms vs baseline 80 ms
+  orders -> payments              7.0 req/s  err   1.2%  p99    2240 ms  slow p99 2240 ms vs baseline 71 ms
+
+evidence (oldest first)
+  deploy v2.3.1 of payments by prerit  [topology-node, 8s ago]
+  p99 1756 ms on web  [metrics-node, 4s ago]
+  p99 1746 ms on orders  [metrics-node, 4s ago]
+  p99 1729 ms on payments  [metrics-node, 4s ago]
+  5 error lines/min: "POST /orders 502: payments unavailable trace=0265b4d514ce45e6"  [logs-node, 4s ago]
+  5 error lines/min: "charge failed: upstream timeout after 2238ms (gateway=stripe-sim, retry=0) trace"  [logs-node, 4s ago]
+  orders -> payments p99 2240 ms (baseline 71 ms)  [traces-node, 1s ago]
+  web -> orders p99 2248 ms (baseline 80 ms)  [traces-node, 1s ago]
+
+one request, three signals
+  metric   error_rate 1.3% over 859 req / 5m   [metrics-node]
+  trace    18c64141cf1d4a34 2364 ms   [traces-node]
+           web:GET /checkout 2364ms ✗ → orders:POST /orders 2353ms ✗ → payments:POST /charge 2336ms ✗ → payments:SELECT balance 7ms
+  log      payments ERROR charge failed: upstream timeout after 2335ms (gateway=stripe-sim, retry=0) trace=18c64141cf1d4a34   [logs-node]
+  log      orders ERROR POST /orders 502: payments unavailable trace=18c64141cf1d4a34   [logs-node]
+
+sources  topology-node 8s ago · metrics-node 0s ago · logs-node 4s ago · traces-node 0s ago
+
+▶ BEAT 2 · an alert that fires on context
+chaos: {"payments": {"p99_ms": 1900, "error_rate": 0.06}, "db-prod-17": {"failover_at": 1794252319.3084202}}
+   watch pane B for SUPPRESSED T+0:08... suppressed (6 s)
+
+00:55:25 SUPPRESSED cpu 94% on db-prod-17
+         reason   replica catch-up after failover (4s ago): lag 80 s, falling
+         recheck  in 120 s · rule: replica catch-up in progress on the same host after a failover in the last 15 min
+         sources  metrics-node 0s ago · logs-node 4s ago · topology-node now · policy-node now
+   the lag drains in ~45 s and cpu clears by itself; talk about the suppress rule meanwhile....................... cpu_high cleared (46 s)
+chaos: {"payments": {"p99_ms": 1900, "error_rate": 0.06}, "db-prod-17": {"failover_at": 1794252319.3084202, "cpu": 0.94}}
+   watch pane B for PAGE T+1:00.. paged (4 s)
+
+00:56:15 PAGE cpu 94% on db-prod-17 → db platform
+         reason    a failover 55s ago is on record but catch-up is done (lag 0 s); this CPU has no explanation
+         hosts     ['orders-db'] · dependents ['payments', 'orders', 'web']
+         host facts failover: failover complete: db-prod-17r promoted to primary on db-prod-17, repl  [logs-node, 55s ago]; cpu 94% on db-prod-17  [metrics-node, 0s ago]
+         runbook   RB-DB-07 (hot host without catch-up)
+         action    check connections and top queries on the host; page the owner if p99 on dependents moves
+         sources   metrics-node 0s ago · logs-node 55s ago · topology-node now · policy-node now
+
+▶ BEAT 3 · SLOs and a posture audit on the same graph
+   letting the burn windows fill with v2.3.1 traffic T+1:04........................................... full
+SLO status · multi-window burn rate · windows 2m / 10m · fast-burn line 14.4, elevated 6
+  service     target   err 2m  err 10m  burn 2m burn 10m  status         p99 latency  burning edge
+  web          0.995    6.21%    5.00%     12.4     10.0  ELEVATED    2364ms BREACH   web -> orders (6.1% errors)
+  orders       0.995    6.21%    5.00%     12.4     10.0  ELEVATED    2353ms BREACH   orders -> payments (6.1% errors)
+  payments     0.999    6.21%    5.00%     62.1     50.0  BURNING     2335ms BREACH   -
+
+  metrics-node now · policy-node now · traces-node 1s ago
+posture audit · 5 findings · rules sql_tls, no_public_db, owner_required, incidental_approved, freeze_deploys, write_tools_human
+  high   sql_tls              payments -> orders-db              SQL over port 5432 without TLS
+         graph: carrying 20.0 req/s right now; 3 services behind it
+  medium incidental_approved  billing-records -> orders-cache    incidental read found in traces, never approved by the owner
+  high   no_public_db         orders-db on db-prod-17            database host has a public IP
+         graph: failover: failover complete: db-prod-17r promoted to primary on db-prod-17, repl  [logs-node, 2m ago]; cpu 94% on db-prod-17  [metrics-node, 87s ago]
+  medium owner_required       search-indexer                     no owner recorded
+  info   write_tools_human    topology-node.record_deploy        write tool exposed; requires approved_by (verified by its own refusal path)
+
+  policy-node now · topology-node now · mesh tool lists startup
+> is orders safe to cut over right now?  route: cutover_check
+
+  topology   orders is in wave 4 · 1 dependents                                             ok
+  database   orders-db on db-prod-17 · replica lag 0 s                                      ok
+  kafka      orders.events · producers ['orders'] + consumers ['payments', 'search-indexer', 'notifier'] co-waved ok
+  cache      orders-cache · auth PR merged · endpoint flipped                               ok
+  policy     freeze: none                                                                   ok
+  note       billing-records reads orders-cache incidentally; it is in wave 5
+
+   GO, with notes   5 nodes · 0 tabs
+freeze ON
+deploy recorded: web v9 (approved by prerit)
+posture audit · 6 findings · rules sql_tls, no_public_db, owner_required, incidental_approved, freeze_deploys, write_tools_human
+  high   sql_tls              payments -> orders-db              SQL over port 5432 without TLS
+         graph: carrying 20.0 req/s right now; 3 services behind it
+  medium incidental_approved  billing-records -> orders-cache    incidental read found in traces, never approved by the owner
+  high   no_public_db         orders-db on db-prod-17            database host has a public IP
+         graph: failover: failover complete: db-prod-17r promoted to primary on db-prod-17, repl  [logs-node, 2m ago]; cpu 94% on db-prod-17  [metrics-node, 90s ago]
+  medium owner_required       search-indexer                     no owner recorded
+  high   freeze_deploys       web v9                             deployed during freeze (cutover night, no deploys)
+  info   write_tools_human    topology-node.record_deploy        write tool exposed; requires approved_by (verified by its own refusal path)
+
+  policy-node now · topology-node now · mesh tool lists startup
+
+▶ done T+2:34 · resetting chaos (deploys and graph facts age out on their own; `make reset` for a clean rerun)
+chaos cleared, freeze off

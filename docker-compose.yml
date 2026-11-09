@@ -1,0 +1,64 @@
+# One estate, five nodes, one bus, one graph. `docker compose up --build`, then use `mesh` from the host.
+# ./data (bind mount) holds the small JSON control files the host CLI writes (chaos, deploys, freeze).
+# The SQLite telemetry file lives on a named volume: SQLite WAL locking over a macOS/Windows bind mount
+# is unreliable across containers, and nothing on the host needs to read it.
+x-node: &node
+  build: .
+  volumes: ["./data:/data", "telemetry:/tele"]
+  environment: &env
+    BUS_URL: redis://redis:6379/0
+    MESH_DATA: /data
+    TELEMETRY_DB: /tele/telemetry.db
+    TZ: ${TZ:-UTC}
+  depends_on: [redis, estate]
+  restart: unless-stopped
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ["127.0.0.1:6379:6379"]   # localhost only: the bus is trusted, conference wifi is not
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+
+  estate:                         # the synthetic services; writes spans, logs and metrics
+    build: .
+    command: ["python", "-m", "mesh.estate"]
+    volumes: ["./data:/data", "telemetry:/tele"]
+    environment: *env
+    restart: unless-stopped
+
+  metrics:
+    <<: *node
+    command: ["python", "-m", "mesh.nodes.metrics_node"]
+    ports: ["127.0.0.1:8101:8101"]
+  logs:
+    <<: *node
+    command: ["python", "-m", "mesh.nodes.logs_node"]
+    ports: ["127.0.0.1:8102:8102"]
+  traces:
+    <<: *node
+    command: ["python", "-m", "mesh.nodes.traces_node"]
+    ports: ["127.0.0.1:8103:8103"]
+  topology:
+    <<: *node
+    command: ["python", "-m", "mesh.nodes.topology_node"]
+    ports: ["127.0.0.1:8104:8104"]
+  policy:
+    <<: *node
+    command: ["python", "-m", "mesh.nodes.policy_node"]
+    ports: ["127.0.0.1:8105:8105"]
+
+  graph:                          # the context graph: MCP server + read-only HTTP API + alert engine
+    <<: *node
+    command: ["python", "-m", "mesh.graph"]
+    ports: ["127.0.0.1:8100:8100"]
+    environment:
+      <<: *env
+      METRICS_HOST: metrics
+      LOGS_HOST: logs
+      TRACES_HOST: traces
+      TOPOLOGY_HOST: topology
+      POLICY_HOST: policy
+    depends_on: [redis, estate, metrics, logs, traces, topology, policy]
+
+volumes:
+  telemetry:

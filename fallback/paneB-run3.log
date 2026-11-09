@@ -1,0 +1,84 @@
+=== RUN3 00:31:59
+00:31:59 context.topology.deploy          {"service": "payments", "version": "v2.3.1", "approved_by": "prerit"}  [topology-node]
+00:32:02 context.traces.slow_edge         {"from": "web", "to": "orders", "p99_ms": 1747.4, "baseline_ms": 76.0, "sample_trace": "c4bceceec937409e"}  [traces-node]
+00:32:02 context.traces.slow_edge         {"from": "orders", "to": "payments", "p99_ms": 1737.0, "baseline_ms": 65.6, "sample_trace": "c4bceceec937409e"}  [traces-node]
+00:32:03 context.logs.error_burst         {"service": "orders", "count_1m": 7, "previous_1m": 0, "sample": "POST /orders 502: payments unavailable trace=f7b824611  [logs-node]
+00:32:03 context.logs.error_burst         {"service": "payments", "count_1m": 7, "previous_1m": 0, "sample": "charge failed: upstream timeout after 2279ms (gatewa  [logs-node]
+00:32:00 context.logs.keyword             {"keyword": "deploy", "service": "payments", "msg": "deploy v2.3.1 rollout complete (3/3 pods)"}  [logs-node]
+00:32:04 context.metrics.latency          {"service": "web", "p99_ms": 2011.6}  [metrics-node]
+00:32:04 context.metrics.latency          {"service": "orders", "p99_ms": 2002.8}  [metrics-node]
+00:32:04 context.metrics.latency          {"service": "payments", "p99_ms": 1978.7}  [metrics-node]
+00:32:06 context.logs.keyword             {"keyword": "failover", "service": "orders-db", "msg": "failover complete: db-prod-17r promoted to primary on db-prod-17  [logs-node]
+00:32:09 context.metrics.cpu_high         {"instance": "db-prod-17", "value": 0.92}  [metrics-node]
+00:32:09 context.metrics.replica_lag      {"host": "db-prod-17", "value": 84.387, "trend": "rising"}  [metrics-node]
+
+00:32:09 SUPPRESSED cpu 92% on db-prod-17
+         reason   replica catch-up after failover (2s ago): lag 84 s, rising
+         recheck  in 120 s · rule: replica catch-up in progress on the same host after a failover in the last 15 min
+         sources  metrics-node 0s ago · logs-node 2s ago · topology-node now · policy-node now
+00:32:19 context.metrics.error_rate       {"service": "web", "value": 0.0226, "window": "2m"}  [metrics-node]
+00:32:19 context.metrics.error_rate       {"service": "orders", "value": 0.0226, "window": "2m"}  [metrics-node]
+00:32:19 context.metrics.error_rate       {"service": "payments", "value": 0.0226, "window": "2m"}  [metrics-node]
+00:32:39 context.metrics.replica_lag.cleared {"host": "db-prod-17", "value": 24.252, "trend": "falling"}  [metrics-node]
+00:32:54 context.metrics.cpu_high.cleared {"instance": "db-prod-17", "value": 0.309}  [metrics-node]
+00:32:59 context.metrics.cpu_high         {"instance": "db-prod-17", "value": 0.94}  [metrics-node]
+
+00:32:59 PAGE cpu 94% on db-prod-17 → db platform
+         reason    a failover 52s ago is on record but catch-up is done (lag 0 s); this CPU has no explanation
+         hosts     ['orders-db'] · dependents ['payments', 'orders', 'web']
+         host facts failover: failover complete: db-prod-17r promoted to primary on db-prod-17, repl  [logs-node, 52s ago]; cpu 94% on db-prod-17  [metrics-node, 0s ago]
+         runbook   RB-DB-07 (hot host without catch-up)
+         action    check connections and top queries on the host; page the owner if p99 on dependents moves
+         sources   metrics-node 0s ago · logs-node 52s ago · topology-node now · policy-node now
+00:34:01 context.topology.deploy          {"service": "web", "version": "v9", "approved_by": "prerit"}  [topology-node]
+00:34:03 context.policy.freeze            {"active": true, "since": 1794251041.247301, "reason": "cutover night, no deploys"}  [policy-node]
+00:34:02 context.logs.keyword             {"keyword": "deploy", "service": "web", "msg": "deploy v9 rollout complete (3/3 pods)"}  [logs-node]
+00:34:05 context.policy.freeze            {"active": false}  [policy-node]
+
+00:34:09 RE-CHECK cpu_high on db-prod-17: a newer decision already paged for this host; nothing to add
+00:34:09 context.metrics.cpu_high.cleared {"instance": "db-prod-17", "value": 0.356}  [metrics-node]
+00:34:14 context.metrics.error_rate.cleared {"service": "web", "value": 0.0, "window": "2m"}  [metrics-node]
+00:34:14 context.metrics.latency.cleared  {"service": "web", "p99_ms": 80.6}  [metrics-node]
+00:34:14 context.metrics.error_rate.cleared {"service": "orders", "value": 0.0, "window": "2m"}  [metrics-node]
+00:34:14 context.metrics.latency.cleared  {"service": "orders", "p99_ms": 71.5}  [metrics-node]
+00:34:14 context.metrics.error_rate.cleared {"service": "payments", "value": 0.0, "window": "2m"}  [metrics-node]
+00:34:14 context.metrics.latency.cleared  {"service": "payments", "p99_ms": 51.4}  [metrics-node]
+00:34:45 context.preflight.ping           {}  [mesh-cli]
+00:34:46 context.topology.deploy          {"service": "payments", "version": "v2.3.1", "approved_by": "prerit"}  [topology-node]
+00:34:48 context.traces.slow_edge         {"from": "web", "to": "orders", "p99_ms": 1704.6, "baseline_ms": 78.3, "sample_trace": "ff9f4abcc3b548fd"}  [traces-node]
+00:34:48 context.traces.slow_edge         {"from": "orders", "to": "payments", "p99_ms": 1693.7, "baseline_ms": 68.7, "sample_trace": "ff9f4abcc3b548fd"}  [traces-node]
+00:34:50 context.logs.error_burst         {"service": "orders", "count_1m": 8, "previous_1m": 0, "sample": "POST /orders 502: payments unavailable trace=f6ecefc73  [logs-node]
+00:34:50 context.logs.error_burst         {"service": "payments", "count_1m": 8, "previous_1m": 0, "sample": "charge failed: upstream timeout after 2328ms (gatewa  [logs-node]
+00:34:47 context.logs.keyword             {"keyword": "deploy", "service": "payments", "msg": "deploy v2.3.1 rollout complete (3/3 pods)"}  [logs-node]
+00:34:50 context.metrics.latency          {"service": "web", "p99_ms": 2073.9}  [metrics-node]
+00:34:50 context.metrics.latency          {"service": "orders", "p99_ms": 2065.4}  [metrics-node]
+00:34:50 context.metrics.latency          {"service": "payments", "p99_ms": 2047.9}  [metrics-node]
+00:34:53 context.logs.keyword             {"keyword": "failover", "service": "orders-db", "msg": "failover complete: db-prod-17r promoted to primary on db-prod-17  [logs-node]
+00:34:55 context.metrics.cpu_high         {"instance": "db-prod-17", "value": 0.92}  [metrics-node]
+00:34:55 context.metrics.replica_lag      {"host": "db-prod-17", "value": 84.799, "trend": "rising"}  [metrics-node]
+
+00:34:55 SUPPRESSED cpu 92% on db-prod-17
+         reason   replica catch-up after failover (2s ago): lag 85 s, rising
+         recheck  in 120 s · rule: replica catch-up in progress on the same host after a failover in the last 15 min
+         sources  metrics-node 0s ago · logs-node 2s ago · topology-node now · policy-node now
+00:35:00 context.metrics.error_rate       {"service": "web", "value": 0.0219, "window": "2m"}  [metrics-node]
+00:35:00 context.metrics.error_rate       {"service": "orders", "value": 0.0219, "window": "2m"}  [metrics-node]
+00:35:00 context.metrics.error_rate       {"service": "payments", "value": 0.0219, "window": "2m"}  [metrics-node]
+00:35:25 context.metrics.replica_lag.cleared {"host": "db-prod-17", "value": 24.691, "trend": "falling"}  [metrics-node]
+00:35:40 context.metrics.cpu_high.cleared {"instance": "db-prod-17", "value": 0.32}  [metrics-node]
+00:35:45 context.metrics.cpu_high         {"instance": "db-prod-17", "value": 0.94}  [metrics-node]
+
+00:35:45 PAGE cpu 94% on db-prod-17 → db platform
+         reason    a failover 52s ago is on record but catch-up is done (lag 0 s); this CPU has no explanation
+         hosts     ['orders-db'] · dependents ['payments', 'orders', 'web']
+         host facts failover: failover complete: db-prod-17r promoted to primary on db-prod-17, repl  [logs-node, 52s ago]; cpu 94% on db-prod-17  [metrics-node, 0s ago]
+         runbook   RB-DB-07 (hot host without catch-up)
+         action    check connections and top queries on the host; page the owner if p99 on dependents moves
+         sources   metrics-node 0s ago · logs-node 52s ago · topology-node now · policy-node now
+00:36:47 context.topology.deploy          {"service": "web", "version": "v9", "approved_by": "prerit"}  [topology-node]
+00:36:47 context.policy.freeze            {"active": true, "since": 1794251207.7671309, "reason": "cutover night, no deploys"}  [policy-node]
+00:36:48 context.logs.keyword             {"keyword": "deploy", "service": "web", "msg": "deploy v9 rollout complete (3/3 pods)"}  [logs-node]
+00:36:51 context.policy.freeze            {"active": false}  [policy-node]
+
+00:36:55 RE-CHECK cpu_high on db-prod-17: a newer decision already paged for this host; nothing to add
+00:36:56 context.metrics.cpu_high.cleared {"instance": "db-prod-17", "value": 0.338}  [metrics-node]

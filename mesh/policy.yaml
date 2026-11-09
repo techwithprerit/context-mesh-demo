@@ -1,0 +1,26 @@
+# What the policy node knows: SLOs, posture rules and alert decision rules.
+slos:
+  web:      {availability: 0.995, latency_p99_ms: 400, budget_window: 30d}
+  orders:   {availability: 0.995, latency_p99_ms: 300, budget_window: 30d}
+  payments: {availability: 0.999, latency_p99_ms: 500, budget_window: 30d}
+
+# Multi-window burn-rate alerting. Production pairs are 5m/1h at 14.4 and 30m/6h at 6 (the numbers that
+# spend 2% and 5% of a 30-day budget). The demo estate has minutes of history, so the graph evaluates the
+# same thresholds over shortened windows (2m / 10m); shorter windows make the signal noisier, not stricter.
+burn:
+  fast: {short: 2m, long: 10m, threshold: 14.4}
+  elevated_threshold: 6.0   # the slow-burn number, used here as the "ELEVATED" band
+
+posture_rules:
+  sql_tls:            "SQL edges must use TLS"
+  no_public_db:       "Databases must not have a public IP"
+  owner_required:     "Every service has an owner"
+  incidental_approved: "Incidental reads must be approved or removed"
+  freeze_deploys:     "No deploys while a change freeze is active"
+  write_tools_human:  "MCP write tools must require an approver (readOnlyHint=false needs approved_by)"
+
+alert_rules:
+  # A threshold crossing becomes a question for the graph before it becomes a page.
+  cpu_high:
+    suppress_if: "replica catch-up in progress on the same host after a failover in the last 15 min"
+    recheck_s: 120   # a suppression is a delay with a reason, not a mute: the graph re-evaluates after this

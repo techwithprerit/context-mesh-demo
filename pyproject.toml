@@ -1,0 +1,28 @@
+[project]
+name = "context-mesh"
+version = "0.1.0"
+description = "A context-driven telemetry mesh: MCP nodes + a bus + one graph (conference demo)"
+requires-python = ">=3.11"
+dependencies = [
+  "mcp>=2.0,<3",
+  "uvicorn>=0.30",
+  "starlette>=0.40",
+  "redis>=5",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+llm = ["anthropic>=0.40"]
+
+[project.scripts]
+mesh = "mesh.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["mesh*"]
+
+[tool.setuptools.package-data]
+mesh = ["*.yaml"]

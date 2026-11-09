@@ -1,0 +1,30 @@
+# The estate, as the topology node knows it. In production this comes from a service
+# portal, a CMDB, Kubernetes labels or a cutover tracker; here it is a file.
+services:
+  web:             {owner: storefront, wave: 4, tier: edge}
+  orders:          {owner: orders,     wave: 4, tier: core}
+  payments:        {owner: payments,   wave: 4, tier: core}
+  billing-records: {owner: billing,    wave: 5, tier: batch}
+  search-indexer:  {owner: null,       wave: 4, tier: batch}   # nobody claimed it
+  notifier:        {owner: growth,     wave: 4, tier: async}
+
+databases:
+  orders-db: {engine: postgres, host: db-prod-17, port: 5432, public_ip: true}
+
+hosts:
+  db-prod-17: {zone: eu-west1-b, role: primary, replica: db-prod-17r}
+
+caches:
+  orders-cache: {engine: valkey, auth: true, auth_pr_merged: true, endpoint_flipped: true}
+
+topics:
+  orders.events: {producers: [orders], consumers: [payments, search-indexer, notifier]}
+
+# kind: http | sql | cache | kafka. 'incidental' = a read nobody designed, the topology node found it in traces.
+edges:
+  - {from: web,             to: orders,        kind: http,  port: 443,  tls: true}
+  - {from: orders,          to: payments,      kind: http,  port: 8080, tls: false}
+  - {from: payments,        to: orders-db,     kind: sql,   port: 5432, tls: false}
+  - {from: orders,          to: orders-cache,  kind: cache, port: 6379, tls: true}
+  - {from: orders,          to: orders.events, kind: kafka, port: 9093, tls: true}
+  - {from: billing-records, to: orders-cache,  kind: cache, port: 6379, tls: true, incidental: true, approved: false}

@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" font-family="'JetBrains Mono','DejaVu Sans Mono',Menlo,Consolas,monospace">
+  <defs>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0V64" fill="none" stroke="#4de3ff" stroke-opacity="0.12"/></pattern>
+    <marker id="arrow" orient="auto" markerWidth="10" markerHeight="10" refX="8" refY="5"><path d="M0 0 L10 5 L0 10 Z" fill="#4de3ff"/></marker>
+    <marker id="arrow-amber" orient="auto" markerWidth="10" markerHeight="10" refX="8" refY="5"><path d="M0 0 L10 5 L0 10 Z" fill="#ffb640"/></marker>
+    <marker id="arrow-muted" orient="auto" markerWidth="10" markerHeight="10" refX="8" refY="5"><path d="M0 0 L10 5 L0 10 Z" fill="#8fb3d9"/></marker>
+  </defs>
+  <rect width="1920" height="1080" fill="#0b1a33"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+
+  <text x="64" y="60" font-size="22" fill="#4de3ff" letter-spacing="4">CONTEXT MESH · AS BUILT · DEMO WIRING</text>
+  <text x="1856" y="60" font-size="20" fill="#8fb3d9" letter-spacing="2" text-anchor="end">read-only MCP nodes · one bus · one graph</text>
+
+  <!-- ===== column 1: estate + stores (x 64..436) ===== -->
+  <rect x="64" y="128" width="372" height="300" rx="8" fill="#10264a" stroke="#eaf4ff" stroke-width="2"/>
+  <text x="88" y="164" font-size="22" fill="#eaf4ff" letter-spacing="3">ESTATE (synthetic)</text>
+  <text x="88" y="192" font-size="15" fill="#8fb3d9">mesh/estate.py · 20 req/s</text>
+  <rect x="88" y="216" width="88" height="40" rx="6" fill="#0b1a33" stroke="#8fb3d9" stroke-width="2"/><text x="132" y="242" font-size="17" fill="#eaf4ff" text-anchor="middle">web</text>
+  <rect x="204" y="216" width="100" height="40" rx="6" fill="#0b1a33" stroke="#ffb640" stroke-width="2"/><text x="254" y="242" font-size="17" fill="#ffb640" text-anchor="middle">orders</text>
+  <rect x="332" y="216" width="80" height="40" rx="6" fill="#0b1a33" stroke="#8fb3d9" stroke-width="2"/><text x="372" y="242" font-size="15" fill="#eaf4ff" text-anchor="middle">payments</text>
+  <line x1="176" y1="236" x2="202" y2="236" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="304" y1="236" x2="330" y2="236" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="204" y="284" width="100" height="36" rx="6" fill="#0b1a33" stroke="#8fb3d9" stroke-width="2" stroke-dasharray="4 4"/><text x="254" y="308" font-size="13" fill="#8fb3d9" text-anchor="middle">orders-cache</text>
+  <rect x="332" y="284" width="80" height="36" rx="6" fill="#0b1a33" stroke="#4de3ff" stroke-width="2"/><text x="372" y="308" font-size="13" fill="#4de3ff" text-anchor="middle">orders-db</text>
+  <text x="88" y="352" font-size="15" fill="#8fb3d9">host db-prod-17 · topic orders.events</text>
+  <text x="88" y="380" font-size="14" fill="#ffb640">chaos.json: slow·failover·cpu·freeze</text>
+  <text x="88" y="408" font-size="15" fill="#8fb3d9">writes spans · log lines · metrics</text>
+
+  <line x1="250" y1="428" x2="250" y2="478" stroke="#eaf4ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="64" y="480" width="372" height="242" rx="8" fill="#10264a" stroke="#24507f" stroke-width="2"/>
+  <text x="88" y="516" font-size="22" fill="#eaf4ff" letter-spacing="3">STORES</text>
+  <text x="88" y="544" font-size="14" fill="#8fb3d9">stand-ins for Prometheus / Loki / Tempo</text>
+  <rect x="88" y="568" width="100" height="44" rx="6" fill="#0b1a33" stroke="#ffb640" stroke-width="2"/><text x="138" y="596" font-size="16" fill="#ffb640" text-anchor="middle">metrics</text>
+  <rect x="200" y="568" width="100" height="44" rx="6" fill="#0b1a33" stroke="#4de3ff" stroke-width="2"/><text x="250" y="596" font-size="16" fill="#4de3ff" text-anchor="middle">logs</text>
+  <rect x="312" y="568" width="100" height="44" rx="6" fill="#0b1a33" stroke="#5dffa6" stroke-width="2"/><text x="362" y="596" font-size="16" fill="#5dffa6" text-anchor="middle">spans</text>
+  <text x="88" y="648" font-size="15" fill="#8fb3d9">telemetry.db · one table per node</text>
+  <text x="88" y="676" font-size="15" fill="#8fb3d9">topology.yaml · policy.yaml</text>
+  <text x="88" y="704" font-size="15" fill="#8fb3d9">deploys.json · freeze.json</text>
+
+  <!-- stores -> nodes: one spine, five taps -->
+  <line x1="468" y1="196" x2="468" y2="674" stroke="#24507f" stroke-width="2"/>
+  <line x1="436" y1="640" x2="468" y2="640" stroke="#24507f" stroke-width="2"/>
+  <line x1="468" y1="196" x2="498" y2="196" stroke="#8fb3d9" stroke-width="2" marker-end="url(#arrow-muted)"/>
+  <line x1="468" y1="312" x2="498" y2="312" stroke="#8fb3d9" stroke-width="2" marker-end="url(#arrow-muted)"/>
+  <line x1="468" y1="428" x2="498" y2="428" stroke="#8fb3d9" stroke-width="2" marker-end="url(#arrow-muted)"/>
+  <line x1="468" y1="551" x2="498" y2="551" stroke="#8fb3d9" stroke-width="2" marker-end="url(#arrow-muted)"/>
+  <line x1="468" y1="674" x2="498" y2="674" stroke="#8fb3d9" stroke-width="2" marker-end="url(#arrow-muted)"/>
+
+  <!-- ===== column 2: nodes (x 500..860) ===== -->
+  <text x="500" y="112" font-size="20" fill="#4de3ff" letter-spacing="3">NODES · one store each · readOnlyHint</text>
+
+  <rect x="500" y="140" width="360" height="104" rx="8" fill="#10264a" stroke="#ffb640" stroke-width="2"/>
+  <text x="520" y="170" font-size="20" fill="#ffb640">metrics-node  :8101</text>
+  <text x="520" y="198" font-size="15" fill="#eaf4ff">rate · error_rate · p99 · gauge</text>
+  <text x="520" y="224" font-size="14" fill="#8fb3d9">→ error_rate · latency · cpu_high · lag</text>
+
+  <rect x="500" y="256" width="360" height="104" rx="8" fill="#10264a" stroke="#4de3ff" stroke-width="2"/>
+  <text x="520" y="286" font-size="20" fill="#4de3ff">logs-node  :8102</text>
+  <text x="520" y="314" font-size="15" fill="#eaf4ff">errors · search · for_trace</text>
+  <text x="520" y="340" font-size="14" fill="#8fb3d9">→ error_burst · keyword (failover…)</text>
+
+  <rect x="500" y="372" width="360" height="104" rx="8" fill="#10264a" stroke="#5dffa6" stroke-width="2"/>
+  <text x="520" y="402" font-size="20" fill="#5dffa6">traces-node  :8103</text>
+  <text x="520" y="430" font-size="15" fill="#eaf4ff">trace · slowest · edge_latency</text>
+  <text x="520" y="456" font-size="14" fill="#8fb3d9">→ slow_edge (p99 vs own baseline)</text>
+
+  <rect x="500" y="488" width="360" height="126" rx="8" fill="#10264a" stroke="#eaf4ff" stroke-width="2"/>
+  <text x="520" y="518" font-size="20" fill="#eaf4ff">topology-node  :8104</text>
+  <text x="520" y="546" font-size="15" fill="#eaf4ff">map · neighbours · dependents · owner</text>
+  <text x="520" y="570" font-size="15" fill="#eaf4ff">host_of · deploys</text>
+  <text x="520" y="594" font-size="14" fill="#ff5c7a">record_deploy · write · approved_by</text>
+  <line x1="520" y1="603" x2="840" y2="603" stroke="#24507f" stroke-width="1"/>
+
+  <rect x="500" y="626" width="360" height="104" rx="8" fill="#10264a" stroke="#ff5c7a" stroke-width="2"/>
+  <text x="520" y="656" font-size="20" fill="#ff5c7a">policy-node  :8105</text>
+  <text x="520" y="684" font-size="15" fill="#eaf4ff">slo · burn · rules · evaluate · decide</text>
+  <text x="520" y="710" font-size="14" fill="#8fb3d9">reads no telemetry · judges facts</text>
+
+  <!-- nodes -> bus -->
+  <text x="868" y="130" font-size="13" fill="#8fb3d9">publish</text>
+  <line x1="860" y1="196" x2="898" y2="196" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="860" y1="312" x2="898" y2="312" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="860" y1="428" x2="898" y2="428" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="860" y1="551" x2="898" y2="551" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="860" y1="678" x2="898" y2="678" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== bus (x 900..1000) ===== -->
+  <rect x="900" y="140" width="100" height="590" rx="8" fill="#10264a" stroke="#4de3ff" stroke-width="3" stroke-dasharray="12 10"/>
+  <text transform="translate(936 435) rotate(-90)" font-size="24" fill="#4de3ff" text-anchor="middle" letter-spacing="6">BUS · context.*</text>
+  <text transform="translate(972 435) rotate(-90)" font-size="13" fill="#8fb3d9" text-anchor="middle">redis pub/sub or JSONL · rising edge only · .cleared twin</text>
+
+  <!-- bus -> graph -->
+  <line x1="1000" y1="300" x2="1038" y2="300" stroke="#4de3ff" stroke-width="3" marker-end="url(#arrow)"/>
+  <!-- graph decisions -> bus -->
+  <path d="M1040 650 L1020 650 L1020 560 L1002 560" fill="none" stroke="#ffb640" stroke-width="2" marker-end="url(#arrow-amber)"/>
+
+  <!-- ===== graph (x 1040..1600) ===== -->
+  <rect x="1040" y="140" width="560" height="590" rx="8" fill="#10264a" stroke="#4de3ff" stroke-width="3"/>
+  <text x="1064" y="176" font-size="24" fill="#4de3ff" letter-spacing="3">CONTEXT GRAPH  :8100</text>
+  <text x="1064" y="204" font-size="15" fill="#8fb3d9">mesh/graph.py · MCP server + read-only HTTP + alert engine</text>
+
+  <rect x="1064" y="222" width="512" height="92" rx="6" fill="#0b1a33" stroke="#24507f" stroke-width="2"/>
+  <text x="1080" y="248" font-size="15" fill="#eaf4ff">nodes + typed edges   ← topology.map() at startup</text>
+  <text x="1080" y="272" font-size="15" fill="#eaf4ff">RED per edge          ← traces.edge_latency every 10 s</text>
+  <text x="1080" y="296" font-size="15" fill="#eaf4ff">facts with age        ← bus events · expire after 15 min</text>
+
+  <rect x="1064" y="330" width="250" height="160" rx="6" fill="#0b1a33" stroke="#5dffa6" stroke-width="2"/>
+  <text x="1080" y="356" font-size="17" fill="#5dffa6" letter-spacing="2">ASSEMBLE</text>
+  <text x="1080" y="382" font-size="14" fill="#eaf4ff">explain(service)</text>
+  <text x="1080" y="404" font-size="14" fill="#eaf4ff">blast_radius · cutover_check</text>
+  <text x="1080" y="426" font-size="14" fill="#eaf4ff">slo_status · posture_audit</text>
+  <text x="1080" y="448" font-size="14" fill="#eaf4ff">ask(question) → routes</text>
+  <text x="1080" y="476" font-size="13" fill="#8fb3d9">every answer: sources + ages</text>
+
+  <rect x="1326" y="330" width="250" height="160" rx="6" fill="#0b1a33" stroke="#ffb640" stroke-width="2"/>
+  <text x="1342" y="356" font-size="17" fill="#ffb640" letter-spacing="2">ALERT ENGINE</text>
+  <text x="1342" y="382" font-size="14" fill="#eaf4ff">cpu_high → gather facts</text>
+  <text x="1342" y="404" font-size="14" fill="#eaf4ff">→ policy.decide(facts)</text>
+  <text x="1342" y="426" font-size="14" fill="#5dffa6">SUPPRESS: reason + recheck</text>
+  <text x="1342" y="448" font-size="14" fill="#ff5c7a">PAGE: owner, runbook, deps</text>
+  <text x="1342" y="476" font-size="13" fill="#8fb3d9">fails open · re-checks itself</text>
+
+  <rect x="1064" y="506" width="512" height="62" rx="6" fill="#0b1a33" stroke="#24507f" stroke-width="2"/>
+  <text x="1080" y="532" font-size="14" fill="#eaf4ff">asks nodes over MCP while assembling · never writes</text>
+  <text x="1080" y="554" font-size="13" fill="#8fb3d9">GET /api/graph · /api/events · /api/alerts · /api/explain/{svc}</text>
+
+  <text x="1064" y="600" font-size="14" fill="#8fb3d9">decisions go back on the bus:</text>
+  <text x="1064" y="622" font-size="14" fill="#ffb640">context.alert.suppressed · .page · .recheck</text>
+  <text x="1064" y="664" font-size="13" fill="#8fb3d9">rules: one store per node · read-only by default ·</text>
+  <text x="1064" y="684" font-size="13" fill="#8fb3d9">no provenance no verdict · probes refresh, humans never edit ·</text>
+  <text x="1064" y="704" font-size="13" fill="#8fb3d9">publish on the rising edge · cache the graph, not the answers</text>
+
+  <!-- graph -> nodes (asks), routed under everything -->
+  <path d="M1200 730 L1200 776 L680 776 L680 732" fill="none" stroke="#8fb3d9" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow-muted)"/>
+  <text x="700" y="800" font-size="14" fill="#8fb3d9">graph asks nodes: MCP tool calls, read-only</text>
+
+  <!-- ===== column 4: clients (x 1640..1856) ===== -->
+  <text x="1640" y="112" font-size="20" fill="#4de3ff" letter-spacing="3">CLIENTS</text>
+  <rect x="1640" y="140" width="216" height="172" rx="8" fill="#10264a" stroke="#eaf4ff" stroke-width="2"/>
+  <text x="1658" y="170" font-size="19" fill="#eaf4ff">mesh CLI</text>
+  <text x="1658" y="196" font-size="14" fill="#8fb3d9">demo · explain · ask</text>
+  <text x="1658" y="218" font-size="14" fill="#8fb3d9">audit slo | posture</text>
+  <text x="1658" y="240" font-size="14" fill="#8fb3d9">preflight · alerts</text>
+  <text x="1658" y="262" font-size="14" fill="#4de3ff">watch: tails the bus</text>
+  <text x="1658" y="290" font-size="14" fill="#ffb640">chaos · deploy --approved</text>
+
+  <rect x="1640" y="336" width="216" height="104" rx="8" fill="#10264a" stroke="#24507f" stroke-width="2"/>
+  <text x="1658" y="366" font-size="18" fill="#eaf4ff">agent (optional)</text>
+  <text x="1658" y="392" font-size="14" fill="#8fb3d9">mesh ask --llm</text>
+  <text x="1658" y="414" font-size="14" fill="#8fb3d9">read-only tools only</text>
+
+  <rect x="1640" y="464" width="216" height="92" rx="8" fill="#10264a" stroke="#24507f" stroke-width="2"/>
+  <text x="1658" y="494" font-size="18" fill="#eaf4ff">dashboards</text>
+  <text x="1658" y="520" font-size="14" fill="#8fb3d9">HTTP /api/*</text>
+  <text x="1658" y="542" font-size="14" fill="#8fb3d9">Grafana annotations</text>
+
+  <line x1="1638" y1="226" x2="1602" y2="226" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1638" y1="388" x2="1602" y2="388" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1638" y1="510" x2="1602" y2="510" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="1604" y="216" font-size="11" fill="#8fb3d9">MCP</text>
+  <text x="1604" y="378" font-size="11" fill="#8fb3d9">MCP</text>
+  <text x="1604" y="500" font-size="11" fill="#8fb3d9">HTTP</text>
+
+  <!-- CLI control files -> estate/nodes (amber, under everything) -->
+  <path d="M1748 556 L1748 830 L250 830 L250 724" fill="none" stroke="#ffb640" stroke-width="2" stroke-dasharray="8 8" marker-end="url(#arrow-amber)"/>
+  <line x1="1748" y1="312" x2="1748" y2="334" stroke="#ffb640" stroke-width="2" stroke-dasharray="4 4"/>
+  <line x1="1748" y1="440" x2="1748" y2="462" stroke="#ffb640" stroke-width="2" stroke-dasharray="4 4"/>
+  <text x="700" y="852" font-size="14" fill="#ffb640">chaos.json · deploys.json · freeze.json: the only things a human writes; the estate and the nodes watch them</text>
+
+  <!-- legend + footer -->
+  <line x1="64" y1="912" x2="124" y2="912" stroke="#4de3ff" stroke-width="2" marker-end="url(#arrow)"/><text x="136" y="917" font-size="15" fill="#eaf4ff">MCP call or bus publish</text>
+  <line x1="400" y1="912" x2="460" y2="912" stroke="#8fb3d9" stroke-width="2" marker-end="url(#arrow-muted)"/><text x="472" y="917" font-size="15" fill="#eaf4ff">read from a store</text>
+  <line x1="680" y1="912" x2="740" y2="912" stroke="#ffb640" stroke-width="2" stroke-dasharray="8 8" marker-end="url(#arrow-amber)"/><text x="752" y="917" font-size="15" fill="#eaf4ff">control file written by a human</text>
+  <rect x="1080" y="900" width="36" height="20" rx="4" fill="#10264a" stroke="#ff5c7a" stroke-width="2"/><text x="1128" y="917" font-size="15" fill="#eaf4ff">the one write tool · refuses without approved_by</text>
+  <text x="64" y="968" font-size="16" fill="#8fb3d9">docker compose: redis + estate + 5 nodes + graph · ports on localhost · ./data for control files · named volume for telemetry.db</text>
+  <text x="64" y="1000" font-size="16" fill="#8fb3d9">demo beats:  deploy --and-break → explain  ·  failover → SUPPRESSED, cpu → PAGE  ·  audit slo · audit posture</text>
+  <text x="1856" y="1030" font-size="16" fill="#4de3ff" text-anchor="end" letter-spacing="2">github.com/techwithprerit · context-mesh</text>
+</svg>

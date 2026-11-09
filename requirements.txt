@@ -1,0 +1,5 @@
+mcp>=2.0,<3
+uvicorn>=0.30
+starlette>=0.40
+redis>=5
+pyyaml>=6

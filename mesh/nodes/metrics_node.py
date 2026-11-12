@@ -16,7 +16,7 @@ from ..bus import Bus
 from ..common import READ_ONLY, now, run_server
 
 server = MCPServer("metrics-node", instructions="Rate, errors, duration and gauges for the estate. Read-only.")
-conn = telemetry.connect()
+conn = telemetry.reader()
 bus = Bus()
 SERVICES = ("web", "orders", "payments")
 

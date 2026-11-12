@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+import threading
 import time
 
 DB = os.environ.get("TELEMETRY_DB", "./data/telemetry.db")
@@ -31,6 +32,24 @@ def connect() -> sqlite3.Connection:
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA)
     return conn
+
+
+class _PerThread:
+    """A connection per thread. MCP runs sync tools in worker threads next to each node's watcher, and one
+    shared sqlite3 connection under concurrent calls can hand a query an empty cursor."""
+
+    def __init__(self):
+        self._local = threading.local()
+
+    def __getattr__(self, name):
+        if not hasattr(self._local, "conn"):
+            self._local.conn = connect()
+        return getattr(self._local.conn, name)
+
+
+def reader() -> _PerThread:
+    """For the nodes: reads from any thread. The estate, the single writer, keeps one connect()."""
+    return _PerThread()
 
 
 def prune(conn: sqlite3.Connection, keep_s: int = 1800) -> None:

@@ -11,7 +11,7 @@ from ..bus import Bus
 from ..common import READ_ONLY, now, run_server
 
 server = MCPServer("logs-node", instructions="Search and tail log lines; error bursts are published to the bus.")
-conn = telemetry.connect()
+conn = telemetry.reader()
 bus = Bus()
 WATCH_WORDS = ("failover", "deadlock", "OOM", "deploy")
 

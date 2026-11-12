@@ -11,7 +11,7 @@ from ..bus import Bus
 from ..common import READ_ONLY, now, run_server
 
 server = MCPServer("traces-node", instructions="Slow traces, critical paths and per-edge latency. Read-only.")
-conn = telemetry.connect()
+conn = telemetry.reader()
 bus = Bus()
 
 

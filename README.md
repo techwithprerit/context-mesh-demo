@@ -128,9 +128,6 @@ can't type into a half-ready estate. To watch the whole thing unattended (~2.5 m
 | **2 · Alerts that fire on context** | `chaos failover db-prod-17` → (wait for clear) → `chaos cpu db-prod-17` | Same threshold twice: **SUPPRESSED** (reason + recheck), then **PAGE** (dependents + runbook). Both explain what they looked for. |
 | **3 · SLOs and posture, same graph** | `audit slo` → `audit posture` | payments **BURNING**, orders/web **ELEVATED**, then five posture findings, one of them annotated with live traffic from the graph. |
 
-[`DEMO.md`](DEMO.md) has the full five-minute script with the real output of every step.
-[`DEMO-CARD.md`](DEMO-CARD.md) is the one-page version.
-
 Want to poke around yourself?
 
 ```bash
@@ -258,20 +255,6 @@ tools, thresholds and events don't change, and the graph never learns which back
 Query snippets for each are in [`skills/context-mesh/references/backends.md`](skills/context-mesh/references/backends.md),
 and [`skills/context-mesh/scripts/node_template.py`](skills/context-mesh/scripts/node_template.py) is a complete, runnable node to copy.
 
-## Use it with a coding agent
-
-[`AGENTS.md`](AGENTS.md) is written for coding agents (Claude Code, Cursor, Codex, Copilot and others).
-Open the repo in your agent and ask:
-
-> *"Read AGENTS.md and run this as a POC on my machine. Tell me if it's GO."*
-
-or
-
-> *"Read AGENTS.md and do a full rehearsal of the demo, then report what passed."*
-
-The agent will set up the environment, run the preflight and the unattended rehearsal, check the output
-against the expected results, and report back. It won't push, deploy anywhere, or approve writes on your behalf.
-
 ## The Claude skill
 
 [`skills/context-mesh/`](skills/context-mesh/) packages the whole method as a Claude skill: the rules, the build
@@ -294,14 +277,14 @@ mesh/
   policy.yaml          SLOs, posture rules, alert rules (in prose)
 skills/context-mesh/   the reusable Claude skill: rules, references, node template
 docs/                  architecture diagram (SVG source + PNG)
-DEMO.md                five-minute run of show with real outputs
-DEMO-CARD.md           one-page stage card
-AGENTS.md              instructions for coding agents
-demo.cast              asciinema recording of a full rehearsal (`asciinema play -s 2 demo.cast`)
-fallback/              text copies of a full rehearsal (both panes)
+LICENSE                MIT
 ```
 
 ---
 
 Hosts, rates, latencies, owners and trace ids are all synthetic, produced by the estate for the demo.
 Nothing here talks to a real system unless you point a node at one.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).

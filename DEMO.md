@@ -59,7 +59,7 @@ and leave it; it is the bus, and the audience watches facts arrive there before 
 Pane **A** (left): `mesh demo --approved-by <you>`, which stops at `[…: Enter]` prompts.
 
 Let the estate run at least two minutes before beat 1 (the traces node needs a healthy baseline;
-preflight's "baseline healthy" line checks it). Keep slide 24 up; switch to the terminal on
+preflight's "baseline healthy" line checks it). Keep slide 33 up; switch to the terminal on
 "three things to watch for".
 
 ## Beat 1 · Correlation across layers, live (0:00 – 2:00)
@@ -83,7 +83,7 @@ one request, three signals
 sources  metrics-node 0s ago · traces-node 0s ago
 ```
 Point at the bottom block: *"one request, already joined from the metric, the trace's critical path
-and the log lines on that trace id. That join is the thing we paid five vendors for."*
+and the log lines on that trace id. That join used to take five tabs."*
 
 Say: *"Now I deploy payments. A deploy is a write, so a human has to approve it."* Enter.
 
@@ -162,8 +162,8 @@ Within ~6 s pane B shows `logs.keyword failover`, `metrics.cpu_high`, `metrics.r
          sources  metrics-node 0s ago · logs-node 4s ago · topology-node now · policy-node now
 ```
 Say: *"CPU 94 percent. In my old inbox that is a page. The graph asked the policy node, the policy
-node asked for the host's facts: expected, re-check in two minutes, sleep. The rule is a sentence
-in a YAML file, not a regex."* (If the lag has only just
+node asked for the host's facts: expected, re-check in two minutes, sleep. The rule is a few lines in the policy node,
+with its sentence in the policy file. Not a regex."* (If the lag has only just
 appeared, the engine looks again for up to 4 s so the trend it reports is the drain, not the jump.)
 
 The lag drains in ~45 s and the CPU clears by itself; the director waits for
@@ -230,7 +230,7 @@ posture audit · 5 findings · rules sql_tls, no_public_db, owner_required, inci
   info   write_tools_human    topology-node.record_deploy        write tool exposed; requires approved_by (verified by its own refusal path)
 ```
 Walk two: the SQL edge without TLS, annotated with the live rate and the three services behind it
-(*"the policy node asked the topology node; nothing new was built"*), and `write_tools_human`
+(*"the graph handed the topology node's map to the policy node; nothing new was built"*), and `write_tools_human`
 (*"the audit reads the mesh's own tool annotations; the only write tool is the one that refused me
 in beat one"*).
 

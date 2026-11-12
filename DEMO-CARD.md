@@ -21,7 +21,7 @@ BEAT 2  2:00   "Same threshold, crossed twice."                              Ent
 BEAT 3  3:45   Enter → audit slo:   payments BURNING, orders/web ELEVATED, every p99 BREACH
                "policy maths · metrics ratios · traces edge · the graph only joined"
         4:20   Enter → audit posture: 5 findings; walk sql_tls (+graph context) and write_tools_human
-        5:00   "Read-only tools, a bus, one graph. The model is optional."   → slide 25
+        5:00   "Read-only tools, a bus, one graph. The model is optional."   → slide 34
 
 SPARES         mesh ask "is orders safe to cut over right now?"   (GO with notes)
                mesh chaos freeze on && mesh deploy web v9 --approved-by <you> && mesh audit posture

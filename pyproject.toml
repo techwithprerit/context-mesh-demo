@@ -13,6 +13,7 @@ dependencies = [
 
 [project.optional-dependencies]
 llm = ["anthropic>=0.40"]
+tui = ["textual>=0.80"]
 
 [project.scripts]
 mesh = "mesh.cli:main"

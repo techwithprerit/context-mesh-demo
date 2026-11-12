@@ -410,6 +410,14 @@ def cmd_demo(a):
     cmd_chaos(argparse.Namespace(kind="reset", target=None, p99=None, errors=None, value=None))
 
 
+def cmd_tui(a):
+    try:
+        from .tui import run as run_tui
+    except ImportError:
+        print("the TUI needs textual: pip install -e '.[tui]'"); sys.exit(1)
+    run_tui(a.approved_by or os.environ.get("USER", "presenter"), a.extended)
+
+
 def _default_bus() -> None:
     """No BUS_URL and not in local mode: use the docker redis if it answers, so a fresh pane is never on the wrong bus."""
     if "BUS_URL" in os.environ or os.path.exists(os.path.join(os.environ.get("MESH_DATA", "./data"), "pids")):
@@ -444,6 +452,8 @@ def main(argv=None):
     dm.add_argument("--auto", action="store_true"); dm.add_argument("--extended", action="store_true"); dm.add_argument("--approved-by", default="")
     dm.set_defaults(fn=cmd_demo)
     rh = sp.add_parser("rehearse", help="same as demo --auto --extended"); rh.set_defaults(fn=lambda a: cmd_demo(argparse.Namespace(auto=True, extended=True, approved_by="")))
+    tu = sp.add_parser("tui", help="the whole demo in one full-screen terminal (pip install -e '.[tui]')")
+    tu.add_argument("--approved-by", default=""); tu.add_argument("--extended", action="store_true"); tu.set_defaults(fn=cmd_tui)
     a = p.parse_args(argv)
     a.fn(a)
 

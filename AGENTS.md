@@ -183,6 +183,7 @@ quotes, update that block with **real** output from a run. Never hand-edit numbe
 | `mesh/graph.py` | the context graph, alert engine and audits; MCP + HTTP on 8100 |
 | `mesh/bus.py` | redis pub/sub (`BUS_URL=redis://…`) or a JSONL file (`file://…`) |
 | `mesh/cli.py` | the `mesh` CLI, `preflight`, and the demo director (`cmd_demo`) |
+| `mesh/tui.py` | `mesh tui`: full-screen wrapper (textual, optional extra) that drives `cmd_demo` with keys instead of Enter |
 | `mesh/topology.yaml`, `mesh/policy.yaml` | the estate and the rules (SLOs, posture, alert suppress rules in prose) |
 | `docker-compose.yml`, `Makefile`, `scripts/run_local.sh` | the two run modes |
 | `skills/context-mesh/` | the reusable method as a Claude skill |

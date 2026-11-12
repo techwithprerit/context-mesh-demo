@@ -8,12 +8,16 @@ sources and their age.
 This is the demo from the talk **"Logs, Metrics, Traces… Assemble! Building a Context-Driven Mesh"**.
 It runs on a laptop in about a minute, needs no cloud account and no LLM, and every value it produces is synthetic.
 
+> **Saw the talk?** Jump to the [Quick start](#quick-start-5-minutes) and run the exact demo from the stage, or
+> open the repo in your coding agent and say *"Read AGENTS.md and run this as a POC"*.
+
 ![Architecture: estate, stores, five MCP nodes, the bus, the context graph and its clients](docs/architecture.png)
 
 ---
 
 ## Contents
 
+- [The talk in one minute](#the-talk-in-one-minute)
 - [Why](#why)
 - [What you'll see](#what-youll-see)
 - [Quick start (5 minutes)](#quick-start-5-minutes)
@@ -26,8 +30,30 @@ It runs on a laptop in about a minute, needs no cloud account and no LLM, and ev
 - [Use it with a coding agent](#use-it-with-a-coding-agent)
 - [The Claude skill](#the-claude-skill)
 - [Repository layout](#repository-layout)
+- [License](#license)
 
 ---
+
+## The talk in one minute
+
+Today every signal lives in its own tool, and a human joins them by eye. The talk argues for moving that
+join into the system, with four parts:
+
+1. **One thin MCP node per signal store** (metrics, logs, traces, topology, policy). Each node is read-only
+   and has two or three tools phrased as questions.
+2. **A bus of context events.** A node publishes a small fact when something crosses a line, and a
+   `.cleared` twin when it stops.
+3. **One context graph**, built from topology. Its edges carry live RED, and it holds facts that have an
+   age and expire. Humans, agents and alert rules all ask this one graph.
+4. **No provenance, no verdict.** Every answer cites its sources and how old they are.
+
+The demo proves three claims, one per beat:
+
+| Beat | Claim |
+|---|---|
+| 1 | Correlation across layers happens **before anyone asks**. Four independent nodes publish facts, and the graph joins them into one story with a cause, evidence and sources. |
+| 2 | An alert can fire **on context, not on a threshold**. The same CPU number is suppressed once (with a reason and a re-check) and paged once (with a runbook and the dependents). |
+| 3 | The **same graph** answers SLO burn-rate and security-posture questions. Nothing new gets built; the graph only joins. |
 
 ## Why
 
@@ -82,7 +108,7 @@ dependents). Finally the **same graph** runs an SLO burn-rate audit and a securi
 **You need:** Docker (Desktop, or Engine with Compose v2), Python **3.11+**, ~2 GB free RAM. macOS and Linux are tested.
 
 ```bash
-git clone <repo-url> context-mesh-demo && cd context-mesh-demo
+git clone https://github.com/techwithprerit/context-mesh-demo.git && cd context-mesh-demo
 
 # 1. Start the mesh: redis + a synthetic estate + 5 MCP nodes + the graph (all bound to localhost)
 make up
@@ -103,7 +129,8 @@ mesh preflight
   GO: walk on
 ```
 
-Already have Docker running? `make stage` does steps 1 and 3 in one go (start, reset, wait, preflight).
+On macOS, `make stage` runs steps 1 and 3 in one go: it starts Docker Desktop if needed, then brings the
+stack up, resets, waits and runs preflight. On Linux, start the Docker daemon yourself and use the steps above.
 
 When you're done: `make down` (keeps `./data`) or `make clean` (removes everything).
 
@@ -255,6 +282,21 @@ tools, thresholds and events don't change, and the graph never learns which back
 Query snippets for each are in [`skills/context-mesh/references/backends.md`](skills/context-mesh/references/backends.md),
 and [`skills/context-mesh/scripts/node_template.py`](skills/context-mesh/scripts/node_template.py) is a complete, runnable node to copy.
 
+## Use it with a coding agent
+
+[`AGENTS.md`](AGENTS.md) is written for coding agents (Claude Code, Cursor, Codex, Copilot, Gemini CLI and
+others). Open the repo in your agent and ask:
+
+> *"Read AGENTS.md and run this as a POC on my machine. Tell me if it's GO."*
+
+> *"Read AGENTS.md and do a full rehearsal, including the failure tests, then report what passed."*
+
+> *"Read AGENTS.md and the context-mesh skill, then sketch a metrics node for our Prometheus."*
+
+The agent checks prerequisites, sets up a venv, starts the stack, runs the preflight and the unattended
+rehearsal, and checks the output against the expected markers. Then it reports back with evidence for each
+check. It won't push, deploy anywhere, or approve a write on your behalf.
+
 ## The Claude skill
 
 [`skills/context-mesh/`](skills/context-mesh/) packages the whole method as a Claude skill: the rules, the build
@@ -277,6 +319,8 @@ mesh/
   policy.yaml          SLOs, posture rules, alert rules (in prose)
 skills/context-mesh/   the reusable Claude skill: rules, references, node template
 docs/                  architecture diagram (SVG source + PNG)
+scripts/run_local.sh   the no-Docker run mode
+AGENTS.md              instructions for coding agents (CLAUDE.md points at it)
 LICENSE                MIT
 ```
 

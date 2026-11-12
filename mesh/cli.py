@@ -59,7 +59,7 @@ def wait_for(pred, timeout_s: int, label: str, quiet: bool = False) -> bool:
             pass
         if not quiet:
             print(".", end="", flush=True)
-        time.sleep(2)
+        time.sleep(1)
     if not quiet:
         print(f" {C['am']}timed out waiting for {label}{C['x']}")
     return False
@@ -378,7 +378,7 @@ def cmd_demo(a):
     print(f"   watch pane B for SUPPRESSED {clock()}", end="")
     if wait_for(lambda evs: bool(since(evs, "context.alert.suppressed", t_fo)), 45, "suppressed"):
         _render_alert(since(graph_events(), "context.alert.suppressed", t_fo)[-1])
-    print("   the lag drains in ~45 s and cpu clears by itself; talk about the suppress rule meanwhile", end="")
+    print("   the lag drains in ~30 s and cpu clears by itself; talk about the suppress rule meanwhile", end="")
     wait_for(lambda evs: bool(since(evs, "context.metrics.cpu_high.cleared", t_fo)), 90, "cpu_high cleared")
     _pause(auto, "cpu 94% with no story behind it")
     t_cpu = now()

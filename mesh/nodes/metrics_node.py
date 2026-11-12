@@ -121,7 +121,7 @@ def watch() -> None:
                   host="db-prod-17", value=lag["value"], trend=lag["trend"])
         except Exception as e:
             print(f"[metrics-node] watch error: {e}", flush=True)
-        time.sleep(5)
+        time.sleep(2)  # 2 s poll: rising edges reach the bus sooner on stage
 
 
 if __name__ == "__main__":

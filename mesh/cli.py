@@ -59,7 +59,7 @@ def wait_for(pred, timeout_s: int, label: str, quiet: bool = False) -> bool:
             pass
         if not quiet:
             print(".", end="", flush=True)
-        time.sleep(2)
+        time.sleep(1)
     if not quiet:
         print(f" {C['am']}timed out waiting for {label}{C['x']}")
     return False
@@ -378,7 +378,7 @@ def cmd_demo(a):
     print(f"   watch pane B for SUPPRESSED {clock()}", end="")
     if wait_for(lambda evs: bool(since(evs, "context.alert.suppressed", t_fo)), 45, "suppressed"):
         _render_alert(since(graph_events(), "context.alert.suppressed", t_fo)[-1])
-    print("   the lag drains in ~45 s and cpu clears by itself; talk about the suppress rule meanwhile", end="")
+    print("   the lag drains in ~30 s and cpu clears by itself; talk about the suppress rule meanwhile", end="")
     wait_for(lambda evs: bool(since(evs, "context.metrics.cpu_high.cleared", t_fo)), 90, "cpu_high cleared")
     _pause(auto, "cpu 94% with no story behind it")
     t_cpu = now()
@@ -408,6 +408,14 @@ def cmd_demo(a):
 
     _say(f"done {clock()} · resetting chaos (deploys and graph facts age out on their own; `make reset` for a clean rerun)")
     cmd_chaos(argparse.Namespace(kind="reset", target=None, p99=None, errors=None, value=None))
+
+
+def cmd_tui(a):
+    try:
+        from .tui import run as run_tui
+    except ImportError:
+        print("the TUI needs textual: pip install -e '.[tui]'"); sys.exit(1)
+    run_tui(a.approved_by or os.environ.get("USER", "presenter"), a.extended)
 
 
 def _default_bus() -> None:
@@ -444,6 +452,8 @@ def main(argv=None):
     dm.add_argument("--auto", action="store_true"); dm.add_argument("--extended", action="store_true"); dm.add_argument("--approved-by", default="")
     dm.set_defaults(fn=cmd_demo)
     rh = sp.add_parser("rehearse", help="same as demo --auto --extended"); rh.set_defaults(fn=lambda a: cmd_demo(argparse.Namespace(auto=True, extended=True, approved_by="")))
+    tu = sp.add_parser("tui", help="the whole demo in one full-screen terminal (pip install -e '.[tui]')")
+    tu.add_argument("--approved-by", default=""); tu.add_argument("--extended", action="store_true"); tu.set_defaults(fn=cmd_tui)
     a = p.parse_args(argv)
     a.fn(a)
 

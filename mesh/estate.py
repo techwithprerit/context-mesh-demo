@@ -44,7 +44,7 @@ class Estate:
         fo = ch.get("db-prod-17", {}).get("failover_at")
         if not fo:
             return 0.0
-        return max(0.0, 90.0 - 2.0 * (ts - fo))  # catch-up: 90 s of lag draining at 2 s/s
+        return max(0.0, 90.0 - 3.0 * (ts - fo))  # catch-up: 90 s of lag draining at 3 s/s (clears in 30 s)
 
     # -- one request through the estate -------------------------------------
     def request(self, ts: float, ch: dict) -> None:

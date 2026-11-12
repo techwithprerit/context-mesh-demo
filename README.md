@@ -155,6 +155,38 @@ can't type into a half-ready estate. To watch the whole thing unattended (~2.5 m
 | **2 · Alerts that fire on context** | `chaos failover db-prod-17` → (wait for clear) → `chaos cpu db-prod-17` | Same threshold twice: **SUPPRESSED** (reason + recheck), then **PAGE** (dependents + runbook). Both explain what they looked for. |
 | **3 · SLOs and posture, same graph** | `audit slo` → `audit posture` | payments **BURNING**, orders/web **ELEVATED**, then five posture findings, one of them annotated with live traffic from the graph. |
 
+### Or: the whole demo in one terminal
+
+`mesh tui` puts everything on one full-screen window, for Ghostty, iTerm2, WezTerm or any truecolor
+terminal. It runs the same director as `mesh demo`, so the beats, commands and waits are identical. Around
+it you get live **vitals** (req/s, error rate and p99 per service with sparklines, every call edge from the
+traces, db-prod-17's CPU and replica lag), the **bus** (PAGE and SUPPRESSED flash the screen and ring the
+bell), node health, the run of show ticking off, and optional **speaker notes with pace**.
+
+```bash
+pip install -e '.[tui]'                  # adds textual
+mesh tui --approved-by "$USER"           # or: make tui      (add --extended for the cutover + freeze beat)
+```
+
+| Key | Does |
+|---|---|
+| `p` / `r` | preflight / `make reset`, wait 30 s, preflight. The top bar shows GO or NO-GO |
+| `d` | the demo, one key per beat: `Enter` or `space` runs the step shown in the amber bar |
+| `R` | rehearse: the whole flow unattended (`a` switches a running demo to auto) |
+| `esc` | abort the demo at its next pause (then `r`) |
+| `:` | run any `mesh` command in place, e.g. `: explain payments`, `: chaos cpu db-prod-17` |
+| `ctrl+p` | command palette: every read command, chaos knob and action, fuzzy-matched |
+| `f` | filter the bus: all → alerts → topology → metrics → logs → traces |
+| `n` | speaker notes for the current step, with target time and ahead/behind. They're on screen, so turn them off before mirroring |
+| `e` `u` `o` `s` | explain orders · audit slo · audit posture · status |
+| `z` | focus: the director alone, full width (for big fonts on a projector) |
+| `v` / `b` | hide the vitals panel / the whole right column |
+| `w` | save the session (director output + every bus event) to `data/tui-session-*.log` |
+| `?` / `c` / `q` | help / clear / quit |
+
+In Ghostty, go full screen (`cmd+enter`) and size the font with `cmd+=` / `cmd+-`. The layout follows the width:
+150+ columns shows all three columns, 110–149 drops the right column, and under 110 only the director shows.
+
 Want to poke around yourself?
 
 ```bash
@@ -216,6 +248,7 @@ curl -s localhost:8100/api/explain/orders | jq
 | `mesh preflight` | six go/no-go checks: nodes, estate, graph, bus round-trip, baseline, clean state. Exits non-zero on NO-GO |
 | `mesh demo [--approved-by NAME] [--auto] [--extended]` | the guided run of show, one Enter per beat |
 | `mesh rehearse` | `demo --auto --extended`: the whole flow unattended, ~2.5 min |
+| `mesh tui [--approved-by NAME] [--extended]` | the same run of show as a full-screen TUI: director, bus, nodes, beats (`pip install -e '.[tui]'`) |
 | `mesh explain <service>` | cause, action, hot edges, evidence timeline, one request as metric + trace + logs, sources with ages |
 | `mesh watch [--all]` | tail the bus: threshold events in, SUPPRESSED / PAGE decisions out |
 | `mesh alerts` | the decisions the alert engine has taken so far |

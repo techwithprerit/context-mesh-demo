@@ -11,7 +11,7 @@ from ..bus import Bus
 from ..common import READ_ONLY, now, run_server
 
 server = MCPServer("traces-node", instructions="Slow traces, critical paths and per-edge latency. Read-only.")
-conn = telemetry.connect()
+conn = telemetry.reader()
 bus = Bus()
 
 
@@ -94,7 +94,7 @@ def watch() -> None:
                     _fired.pop(key, None)  # healthy again: the next excursion is news, cooldown or not
         except Exception as ex:
             print(f"[traces-node] watch error: {ex}", flush=True)
-        time.sleep(5)
+        time.sleep(2)  # 2 s poll: rising edges reach the bus sooner on stage
 
 
 if __name__ == "__main__":

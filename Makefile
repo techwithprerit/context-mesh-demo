@@ -1,4 +1,4 @@
-.PHONY: stage up down logs local local-down status demo rehearse preflight watch reset clean
+.PHONY: stage up down logs local local-down status demo tui rehearse preflight watch reset clean
 
 # the repo venv if there is one (Homebrew/system Python refuses `pip install`), else whatever python3 is on PATH
 PY ?= $(shell test -x .venv/bin/python && echo .venv/bin/python || echo python3)
@@ -23,6 +23,9 @@ status:
 
 demo:          ## the run of show, one Enter per beat
 	BUS_URL=redis://localhost:6379/0 $(PY) -m mesh.cli demo
+
+tui:           ## the run of show as a full-screen TUI (pip install -e '.[tui]')
+	BUS_URL=redis://localhost:6379/0 $(PY) -m mesh.cli tui
 
 rehearse:      ## the whole run of show, unattended (~2.5 min)
 	BUS_URL=redis://localhost:6379/0 $(PY) -m mesh.cli rehearse

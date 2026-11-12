@@ -11,7 +11,7 @@ from ..bus import Bus
 from ..common import READ_ONLY, now, run_server
 
 server = MCPServer("logs-node", instructions="Search and tail log lines; error bursts are published to the bus.")
-conn = telemetry.connect()
+conn = telemetry.reader()
 bus = Bus()
 WATCH_WORDS = ("failover", "deadlock", "OOM", "deploy")
 
@@ -85,7 +85,7 @@ def watch() -> None:
             _seen_ts = t
         except Exception as e:
             print(f"[logs-node] watch error: {e}", flush=True)
-        time.sleep(5)
+        time.sleep(2)  # 2 s poll: rising edges reach the bus sooner on stage
 
 
 if __name__ == "__main__":
